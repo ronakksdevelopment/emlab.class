@@ -1,0 +1,56 @@
+/* Small phones */
+@media (max-width: 360px) {
+  .code-display { font-size: 1.7rem; letter-spacing: 6px; }
+  .action-card { min-height: 80px; font-size: 0.85rem; }
+  .onboarding-icon { width: 72px; height: 72px; font-size: 1.8rem; }
+}
+
+/* Tablets and up */
+@media (min-width: 720px) {
+  .home-main, .sub-content { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+  .action-grid { grid-template-columns: repeat(4, 1fr); }
+  .classrooms-grid { grid-template-columns: repeat(2, 1fr); }
+  .bottom-nav { display: none; }
+  .app-header, .sub-header { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+}
+
+/* Desktop and up: keep bottom nav hidden, show side-by-side content with max width */
+@media (min-width: 1024px) {
+  .home-main { max-width: 960px; }
+  .classrooms-grid { grid-template-columns: repeat(3, 1fr); }
+  .side-panel { width: 340px; }
+}
+
+/* Classroom: stack side panel below stage on narrow screens, as drawer overlay */
+@media (max-width: 860px) {
+  .side-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    z-index: 400;
+    box-shadow: -4px 0 16px rgba(0,0,0,0.3);
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+  }
+  .side-close-btn { display: flex; }
+  .video-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .control-bar-group:nth-child(2) #pipBtn { display: none; }
+  .classroom-name { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* Larger desktop: constrain classroom width nicely but allow full height */
+@media (min-width: 1280px) {
+  .video-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* Print: hide app chrome */
+@media print {
+  .bottom-nav, .control-bar, .app-header, .sub-header { display: none !important; }
+}

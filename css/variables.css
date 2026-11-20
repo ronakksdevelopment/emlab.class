@@ -1,0 +1,81 @@
+/* ===========================================================
+   EMlab Classes - Design Tokens
+   Brand colors sourced from the English Mastery Lab logo.
+=========================================================== */
+:root {
+  /* Brand palette */
+  --navy: #06285A;
+  --navy-light: #0E3A7A;
+  --yellow: #FFCC00;
+  --pink: #F20C62;
+  --cream: #FCFAEB;
+  --white: #FFFFFF;
+  --sky: #A5D2FF;
+
+  /* Semantic roles */
+  --color-primary: var(--navy);
+  --color-accent: var(--yellow);
+  --color-action: var(--pink);
+  --color-surface-alt: var(--sky);
+  --color-bg: var(--cream);
+  --color-surface: var(--white);
+  --color-text: var(--navy);
+  --color-text-muted: #5B6B85;
+  --color-border: #E7E2CE;
+  --color-success: #1F9D55;
+  --color-danger: #D6225A;
+
+  /* Typography */
+  --font-display: 'Fredoka', 'Nunito', sans-serif;
+  --font-body: 'Nunito', 'Poppins', sans-serif;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Radius / shadow */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 2px 6px rgba(6, 40, 90, 0.08);
+  --shadow-md: 0 6px 16px rgba(6, 40, 90, 0.12);
+  --shadow-lg: 0 12px 28px rgba(6, 40, 90, 0.16);
+
+  --header-height: 64px;
+  --bottom-nav-height: 68px;
+  --control-bar-height: 84px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0A1A33;
+  --color-surface: #102447;
+  --color-text: #F3F6FC;
+  --color-text-muted: #AEBBD6;
+  --color-border: #1C3763;
+  --cream: #10233f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
+    --color-bg: #0A1A33;
+    --color-surface: #102447;
+    --color-text: #F3F6FC;
+    --color-text-muted: #AEBBD6;
+    --color-border: #1C3763;
+    --cream: #10233f;
+  }
+}
