@@ -184,9 +184,11 @@
   display: flex; gap: 4px; padding: 6px;
   box-shadow: var(--shadow-lg);
 }
+.reaction-menu[hidden] { display: none; }
 .reaction-menu button { font-size: 1.3rem; padding: 4px 6px; border-radius: 50%; }
 .reaction-menu button:hover { background: rgba(255,255,255,0.1); }
 
+.more-menu[hidden] { display: none; }
 .more-menu {
   position: fixed;
   bottom: calc(var(--control-bar-height) + var(--safe-bottom) + 10px);
