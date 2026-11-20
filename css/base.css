@@ -1,5 +1,10 @@
 * { box-sizing: border-box; }
 
+/* Safety net: the native [hidden] attribute must always win over any
+   class-based display rule, so toggling hidden from JS reliably hides
+   elements (modals, menus, conditional buttons) regardless of their class. */
+[hidden] { display: none !important; }
+
 html, body {
   height: 100%;
   margin: 0;
