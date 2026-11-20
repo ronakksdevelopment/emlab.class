@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<title>EMlab Classes</title>
+<meta name="description" content="EMlab Classes - create, host, and join virtual classrooms. By English Mastery Lab.">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#06285A">
+<meta name="background-color" content="#FCFAEB">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EMlab Classes">
+<link rel="apple-touch-icon" href="assets/icons/icon-180x180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/icon-16x16.png">
+<link rel="shortcut icon" href="assets/icons/favicon.ico">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome (CDN with local fallback note in README) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous" referrerpolicy="no-referrer">
+
+<!-- QR libraries (lightweight, CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js" defer></script>
+
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/classroom.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- ======================= TOAST / NOTIFICATIONS ======================= -->
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+<!-- ======================= APP SHELL ======================= -->
+<div id="app" class="app">
+
+  <!-- ---------- SPLASH ---------- -->
+  <section id="screen-splash" class="screen splash-screen active">
+    <div class="splash-content">
+      <img src="assets/logo/logo-original.png" alt="English Mastery Lab logo" class="splash-logo">
+      <div class="splash-spinner" aria-hidden="true"></div>
+      <p class="splash-text">Loading EMlab Classes...</p>
+    </div>
+  </section>
+
+  <!-- ---------- ONBOARDING / WALKTHROUGH ---------- -->
+  <section id="screen-onboarding" class="screen">
+    <div class="onboarding-wrap">
+      <button class="skip-btn" id="skipOnboarding">Skip</button>
+      <div class="onboarding-track" id="onboardingTrack">
+        <div class="onboarding-slide active" data-slide="0">
+          <div class="onboarding-icon bg-yellow"><i class="fa-solid fa-chalkboard-user"></i></div>
+          <h2>Welcome to EMlab Classes</h2>
+          <p>A friendly virtual classroom to create, host, and join classes in one place.</p>
+        </div>
+        <div class="onboarding-slide" data-slide="1">
+          <div class="onboarding-icon bg-pink"><i class="fa-solid fa-id-card"></i></div>
+          <h2>Set Up Your Profile</h2>
+          <p>Pick a display name and username so classmates know who you are.</p>
+        </div>
+        <div class="onboarding-slide" data-slide="2">
+          <div class="onboarding-icon bg-navy"><i class="fa-solid fa-plus"></i></div>
+          <h2>Create a Class</h2>
+          <p>Start an instant class or a permanent classroom with one tap. You get a 5 character code instantly.</p>
+        </div>
+        <div class="onboarding-slide" data-slide="3">
+          <div class="onboarding-icon bg-sky"><i class="fa-solid fa-share-nodes"></i></div>
+          <h2>Invite Anyone</h2>
+          <p>Share your class with a code, a QR code, or a link. Copy it or share it with one tap.</p>
+        </div>
+        <div class="onboarding-slide" data-slide="4">
+          <div class="onboarding-icon bg-yellow"><i class="fa-solid fa-qrcode"></i></div>
+          <h2>Join Any Class</h2>
+          <p>Type a code, scan a QR code with your camera, upload a QR image, or open an invite link.</p>
+        </div>
+        <div class="onboarding-slide" data-slide="5">
+          <div class="onboarding-icon bg-pink"><i class="fa-solid fa-video"></i></div>
+          <h2>Simple Classroom Controls</h2>
+          <p>Camera, microphone, chat, screen share, raise hand, and host controls, all within easy reach.</p>
+        </div>
+      </div>
+      <div class="onboarding-dots" id="onboardingDots"></div>
+      <div class="onboarding-actions">
+        <button class="btn btn-ghost" id="onboardingBack"><i class="fa-solid fa-arrow-left"></i> Back</button>
+        <button class="btn btn-primary" id="onboardingNext">Next <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- PROFILE SETUP ---------- -->
+  <section id="screen-profile-setup" class="screen">
+    <div class="centered-card">
+      <img src="assets/logo/logo-original.png" alt="EMlab Classes" class="card-logo-sm">
+      <h2>Create Your Profile</h2>
+      <p class="muted">This stays saved on this device only.</p>
+      <form id="profileForm" class="form-stack">
+        <div class="avatar-picker">
+          <div class="avatar-preview" id="avatarPreview"><i class="fa-solid fa-user"></i></div>
+          <label class="btn btn-sm btn-ghost" for="avatarInput"><i class="fa-solid fa-camera"></i> Add photo</label>
+          <input type="file" id="avatarInput" accept="image/*" hidden>
+        </div>
+        <label class="field-label" for="displayNameInput">Display name</label>
+        <input id="displayNameInput" class="text-input" type="text" placeholder="e.g. Maria Santos" maxlength="40" required>
+
+        <label class="field-label" for="usernameInput">Username</label>
+        <div class="username-row">
+          <span class="username-at">@</span>
+          <input id="usernameInput" class="text-input" type="text" placeholder="e.g. maria_s" maxlength="20" required>
+        </div>
+        <small id="usernameHint" class="field-hint">Letters, numbers, and underscores only.</small>
+
+        <label class="field-label" for="themeSelect">Theme</label>
+        <select id="themeSelect" class="text-input">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">Match system</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary btn-block">Continue <i class="fa-solid fa-arrow-right"></i></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ---------- HOME DASHBOARD ---------- -->
+  <section id="screen-home" class="screen">
+    <header class="app-header">
+      <div class="app-header-left">
+        <img src="assets/logo/logo-original.png" alt="EMlab Classes" class="header-logo">
+      </div>
+      <div class="app-header-right">
+        <button class="icon-btn" id="themeToggleBtn" title="Toggle theme" aria-label="Toggle theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button class="icon-btn" id="installBtn" title="Install app" aria-label="Install app" hidden>
+          <i class="fa-solid fa-download"></i>
+        </button>
+        <button class="avatar-btn" id="profileAvatarBtn" aria-label="Open profile">
+          <span id="headerAvatar" class="header-avatar"><i class="fa-solid fa-user"></i></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <div class="greeting-card">
+        <div>
+          <h1 id="greetingText">Welcome back!</h1>
+          <p class="muted" id="greetingSub">Ready for your next class?</p>
+        </div>
+        <div class="greeting-decor" aria-hidden="true"><i class="fa-solid fa-graduation-cap"></i></div>
+      </div>
+
+      <div class="action-grid">
+        <button class="action-card bg-pink" id="createClassBtn">
+          <i class="fa-solid fa-plus"></i>
+          <span>Create Class</span>
+        </button>
+        <button class="action-card bg-navy" id="joinClassBtn">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>Join Class</span>
+        </button>
+        <button class="action-card bg-yellow text-navy" id="scanQrBtn">
+          <i class="fa-solid fa-qrcode"></i>
+          <span>Scan QR</span>
+        </button>
+        <button class="action-card bg-sky text-navy" id="classroomsBtn">
+          <i class="fa-solid fa-school"></i>
+          <span>Classrooms</span>
+        </button>
+      </div>
+
+      <section class="home-section">
+        <div class="home-section-head">
+          <h3>Recent Classes</h3>
+        </div>
+        <div id="recentClassesList" class="recent-list">
+          <p class="empty-hint">No recent classes yet. Create or join one to get started.</p>
+        </div>
+      </section>
+
+      <section class="home-section">
+        <div class="home-section-head">
+          <h3>Permanent Classrooms</h3>
+          <button class="link-btn" id="viewAllClassroomsBtn">View all</button>
+        </div>
+        <div id="classroomsPreviewList" class="classrooms-grid">
+          <p class="empty-hint">No classrooms yet. Create a permanent classroom to organize ongoing classes.</p>
+        </div>
+      </section>
+
+      <section class="home-section">
+        <div class="home-section-head"><h3>Activity</h3></div>
+        <div id="activityList" class="activity-list">
+          <p class="empty-hint">Your recent activity will show up here.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="bottom-nav-item active" data-nav="home"><i class="fa-solid fa-house"></i><span>Home</span></button>
+      <button class="bottom-nav-item" data-nav="classrooms"><i class="fa-solid fa-school"></i><span>Classrooms</span></button>
+      <button class="bottom-nav-item" data-nav="join" id="navJoinBtn"><i class="fa-solid fa-qrcode"></i><span>Join</span></button>
+      <button class="bottom-nav-item" data-nav="profile"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+    </nav>
+  </section>
+
+  <!-- ---------- CREATE CLASS ---------- -->
+  <section id="screen-create" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="home"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Create Class</h2>
+      <span></span>
+    </header>
+    <div class="sub-content">
+      <div class="type-toggle" role="tablist">
+        <button class="type-toggle-btn active" data-type="instant" role="tab">
+          <i class="fa-solid fa-bolt"></i> Instant Class
+        </button>
+        <button class="type-toggle-btn" data-type="permanent" role="tab">
+          <i class="fa-solid fa-school"></i> Permanent Classroom
+        </button>
+      </div>
+
+      <form id="createClassForm" class="form-stack">
+        <label class="field-label" for="classNameInput">Class name</label>
+        <input id="classNameInput" class="text-input" type="text" placeholder="e.g. Grammar Basics" maxlength="50" required>
+
+        <div id="permanentFields" hidden>
+          <label class="field-label" for="classDescInput">Description</label>
+          <textarea id="classDescInput" class="text-input" rows="3" placeholder="What is this classroom about?" maxlength="300"></textarea>
+        </div>
+
+        <label class="field-label">Permissions</label>
+        <div class="permission-list">
+          <label class="switch-row"><span><i class="fa-solid fa-microphone"></i> Allow microphone</span><input type="checkbox" id="permMic" checked class="switch-input"></label>
+          <label class="switch-row"><span><i class="fa-solid fa-video"></i> Allow camera</span><input type="checkbox" id="permCam" checked class="switch-input"></label>
+          <label class="switch-row"><span><i class="fa-solid fa-comments"></i> Allow chat</span><input type="checkbox" id="permChat" checked class="switch-input"></label>
+          <label class="switch-row"><span><i class="fa-solid fa-paperclip"></i> Allow file uploads</span><input type="checkbox" id="permFiles" checked class="switch-input"></label>
+          <label class="switch-row"><span><i class="fa-solid fa-user-plus"></i> Allow invitations by members</span><input type="checkbox" id="permInvite" class="switch-input"></label>
+          <label class="switch-row"><span><i class="fa-solid fa-display"></i> Allow screen sharing</span><input type="checkbox" id="permScreen" checked class="switch-input"></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-plus"></i> Create</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ---------- CLASS CREATED / INVITE ---------- -->
+  <section id="screen-invite" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="home"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Class Ready</h2>
+      <span></span>
+    </header>
+    <div class="sub-content invite-content">
+      <div class="success-badge"><i class="fa-solid fa-circle-check"></i></div>
+      <h2 id="inviteClassName">Class Name</h2>
+      <p class="muted">Share this class so others can join</p>
+
+      <div class="code-display" id="codeDisplay">------</div>
+      <button class="btn btn-ghost btn-sm" id="copyCodeBtn"><i class="fa-regular fa-copy"></i> Copy Code</button>
+
+      <div class="qr-wrap" id="inviteQrWrap"></div>
+
+      <div class="invite-actions">
+        <button class="btn btn-secondary" id="copyLinkBtn"><i class="fa-solid fa-link"></i> Copy Link</button>
+        <button class="btn btn-secondary" id="shareInviteBtn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="enterClassroomBtn">Enter Classroom <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <!-- ---------- JOIN CLASS ---------- -->
+  <section id="screen-join" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="home"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Join Class</h2>
+      <span></span>
+    </header>
+    <div class="sub-content">
+      <div class="join-tabs" role="tablist">
+        <button class="join-tab active" data-join-tab="code"><i class="fa-solid fa-keyboard"></i> Code</button>
+        <button class="join-tab" data-join-tab="scan"><i class="fa-solid fa-camera"></i> Scan</button>
+        <button class="join-tab" data-join-tab="upload"><i class="fa-solid fa-image"></i> Upload</button>
+        <button class="join-tab" data-join-tab="link"><i class="fa-solid fa-link"></i> Link</button>
+      </div>
+
+      <div class="join-panel active" data-join-panel="code">
+        <label class="field-label" for="joinCodeInput">Enter 5 character class code</label>
+        <input id="joinCodeInput" class="text-input code-input" type="text" maxlength="5" placeholder="ABC12" autocomplete="off" autocapitalize="characters">
+        <button class="btn btn-primary btn-block" id="joinByCodeBtn"><i class="fa-solid fa-right-to-bracket"></i> Join</button>
+      </div>
+
+      <div class="join-panel" data-join-panel="scan">
+        <div class="scanner-frame" id="scannerFrame">
+          <video id="scannerVideo" playsinline muted></video>
+          <div class="scanner-square"></div>
+        </div>
+        <canvas id="scannerCanvas" hidden></canvas>
+        <button class="btn btn-secondary btn-block" id="startScanBtn"><i class="fa-solid fa-camera"></i> Start Camera</button>
+        <p class="field-hint" id="scanHint">Point your camera at a class QR code.</p>
+      </div>
+
+      <div class="join-panel" data-join-panel="upload">
+        <label class="upload-drop" for="qrUploadInput">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Upload a QR code image</span>
+        </label>
+        <input type="file" id="qrUploadInput" accept="image/*" hidden>
+        <canvas id="uploadCanvas" hidden></canvas>
+      </div>
+
+      <div class="join-panel" data-join-panel="link">
+        <label class="field-label" for="joinLinkInput">Paste invitation link</label>
+        <input id="joinLinkInput" class="text-input" type="text" placeholder="https://.../?join=ABC12">
+        <button class="btn btn-primary btn-block" id="joinByLinkBtn"><i class="fa-solid fa-right-to-bracket"></i> Open Link</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- CLASSROOMS LIST ---------- -->
+  <section id="screen-classrooms" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="home"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Permanent Classrooms</h2>
+      <button class="icon-btn" id="addClassroomBtn"><i class="fa-solid fa-plus"></i></button>
+    </header>
+    <div class="sub-content">
+      <div id="classroomsFullList" class="classrooms-grid">
+        <p class="empty-hint">No classrooms yet. Tap + to create one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- CLASSROOM DETAIL (permanent) ---------- -->
+  <section id="screen-classroom-detail" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="classrooms"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 id="classroomDetailName">Classroom</h2>
+      <button class="icon-btn" id="classroomMenuBtn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+    </header>
+    <div class="sub-content">
+      <div class="detail-tabs" role="tablist">
+        <button class="detail-tab active" data-detail-tab="overview">Overview</button>
+        <button class="detail-tab" data-detail-tab="members">Members</button>
+        <button class="detail-tab" data-detail-tab="announcements">Announcements</button>
+        <button class="detail-tab" data-detail-tab="resources">Resources</button>
+        <button class="detail-tab" data-detail-tab="settings">Settings</button>
+      </div>
+
+      <div class="detail-panel active" data-detail-panel="overview">
+        <p id="classroomDetailDesc" class="muted"></p>
+        <div class="code-display sm" id="classroomDetailCode">------</div>
+        <div class="qr-wrap" id="classroomDetailQr"></div>
+        <div class="invite-actions">
+          <button class="btn btn-secondary btn-sm" id="classroomCopyCode"><i class="fa-regular fa-copy"></i> Copy Code</button>
+          <button class="btn btn-secondary btn-sm" id="classroomCopyLink"><i class="fa-solid fa-link"></i> Copy Link</button>
+          <button class="btn btn-secondary btn-sm" id="classroomShare"><i class="fa-solid fa-share-nodes"></i> Share</button>
+        </div>
+        <button class="btn btn-primary btn-block" id="enterClassroomDetailBtn">Enter Classroom <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <div class="detail-panel" data-detail-panel="members">
+        <div id="classroomMembersList" class="member-list"></div>
+      </div>
+
+      <div class="detail-panel" data-detail-panel="announcements">
+        <form id="announcementForm" class="inline-form">
+          <input id="announcementInput" class="text-input" type="text" placeholder="Post an announcement...">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-bullhorn"></i></button>
+        </form>
+        <div id="announcementsList" class="announcement-list"></div>
+      </div>
+
+      <div class="detail-panel" data-detail-panel="resources">
+        <label class="upload-drop" for="resourceUploadInput">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          <span>Add a learning resource or assignment</span>
+        </label>
+        <input type="file" id="resourceUploadInput" hidden multiple>
+        <div id="resourcesList" class="resource-list"></div>
+      </div>
+
+      <div class="detail-panel" data-detail-panel="settings">
+        <div class="permission-list" id="classroomSettingsPerms"></div>
+        <button class="btn btn-secondary btn-block" id="transferHostBtn"><i class="fa-solid fa-crown"></i> Transfer Host</button>
+        <button class="btn btn-ghost btn-block danger" id="leaveClassroomBtn"><i class="fa-solid fa-right-from-bracket"></i> Leave Classroom</button>
+        <button class="btn btn-ghost btn-block danger" id="deleteClassroomBtn"><i class="fa-solid fa-trash"></i> Delete Classroom</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- PROFILE / SETTINGS ---------- -->
+  <section id="screen-profile" class="screen">
+    <header class="sub-header">
+      <button class="icon-btn back-btn" data-back="home"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2>Profile</h2>
+      <span></span>
+    </header>
+    <div class="sub-content">
+      <div class="profile-card">
+        <div class="avatar-preview lg" id="profileAvatarLg"><i class="fa-solid fa-user"></i></div>
+        <h3 id="profileDisplayName">Name</h3>
+        <p class="muted" id="profileUsername">@username</p>
+        <button class="btn btn-ghost btn-sm" id="editProfileBtn"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-row">
+          <span><i class="fa-solid fa-circle-half-stroke"></i> Theme</span>
+          <select id="profileThemeSelect" class="mini-select">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+        <button class="settings-row" id="replayOnboardingBtn">
+          <span><i class="fa-solid fa-circle-play"></i> Replay Walkthrough</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="settings-row" id="aboutAppBtn">
+          <span><i class="fa-solid fa-circle-info"></i> About EMlab Classes</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="settings-row" id="installBtnProfile">
+          <span><i class="fa-solid fa-download"></i> Install App</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="settings-row danger" id="resetDataBtn">
+          <span><i class="fa-solid fa-trash"></i> Reset All Local Data</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- VIRTUAL CLASSROOM ---------- -->
+  <section id="screen-classroom" class="screen classroom-screen">
+    <div class="classroom-shell">
+      <header class="classroom-top">
+        <div class="classroom-top-left">
+          <span class="classroom-name" id="liveClassName">Class Name</span>
+          <span class="demo-badge" title="No internet video or shared data between devices in this beta"><i class="fa-solid fa-flask"></i> Local Demo</span>
+        </div>
+        <div class="classroom-top-right">
+          <span class="meeting-timer" id="meetingTimer"><i class="fa-solid fa-clock"></i> 00:00</span>
+          <span class="participant-count" id="participantCountBadge"><i class="fa-solid fa-users"></i> 1</span>
+          <button class="icon-btn" id="fullscreenBtn" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+        </div>
+      </header>
+
+      <div class="classroom-body">
+        <div class="stage-area" id="stageArea">
+          <div class="view-controls">
+            <button class="chip-btn active" data-view="gallery"><i class="fa-solid fa-table-cells"></i> Gallery</button>
+            <button class="chip-btn" data-view="speaker"><i class="fa-solid fa-user"></i> Speaker</button>
+          </div>
+          <div class="video-grid" id="videoGrid"></div>
+        </div>
+
+        <aside class="side-panel" id="sidePanel">
+          <div class="side-tabs">
+            <button class="side-tab active" data-side-tab="participants"><i class="fa-solid fa-users"></i> People</button>
+            <button class="side-tab" data-side-tab="chat"><i class="fa-solid fa-comments"></i> Chat</button>
+          </div>
+
+          <div class="side-content active" data-side-content="participants">
+            <ul id="participantsList" class="participants-list"></ul>
+          </div>
+
+          <div class="side-content" data-side-content="chat">
+            <div class="chat-pinned" id="chatPinned" hidden></div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-row">
+              <button class="icon-btn" id="chatFileBtn" title="Attach file"><i class="fa-solid fa-paperclip"></i></button>
+              <input type="file" id="chatFileInput" hidden>
+              <input class="text-input" id="chatInput" type="text" placeholder="Message everyone..." maxlength="500">
+              <button class="icon-btn send-btn" id="chatSendBtn" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+          </div>
+          <button class="side-close-btn" id="sidePanelCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+        </aside>
+      </div>
+
+      <div class="reactions-overlay" id="reactionsOverlay"></div>
+
+      <footer class="control-bar">
+        <div class="control-bar-group">
+          <button class="control-btn" id="micBtn" title="Mute/unmute"><i class="fa-solid fa-microphone"></i><span>Mute</span></button>
+          <button class="control-btn" id="camBtn" title="Camera on/off"><i class="fa-solid fa-video"></i><span>Camera</span></button>
+          <button class="control-btn" id="screenShareBtn" title="Share screen"><i class="fa-solid fa-display"></i><span>Share</span></button>
+        </div>
+        <div class="control-bar-group">
+          <button class="control-btn" id="raiseHandBtn" title="Raise hand"><i class="fa-solid fa-hand"></i><span>Raise</span></button>
+          <div class="reaction-menu-wrap">
+            <button class="control-btn" id="reactBtn" title="React"><i class="fa-regular fa-face-smile"></i><span>React</span></button>
+            <div class="reaction-menu" id="reactionMenu" hidden>
+              <button data-emoji="👍">👍</button><button data-emoji="❤️">❤️</button>
+              <button data-emoji="😂">😂</button><button data-emoji="👏">👏</button>
+              <button data-emoji="🎉">🎉</button><button data-emoji="🤔">🤔</button>
+            </div>
+          </div>
+          <button class="control-btn" id="pipBtn" title="Picture in picture"><i class="fa-solid fa-clone"></i><span>PiP</span></button>
+        </div>
+        <div class="control-bar-group">
+          <button class="control-btn" id="chatToggleBtn" title="Chat"><i class="fa-solid fa-comments"></i><span>Chat</span></button>
+          <button class="control-btn" id="participantsToggleBtn" title="Participants"><i class="fa-solid fa-users"></i><span>People</span></button>
+          <button class="control-btn" id="moreBtn" title="More options"><i class="fa-solid fa-ellipsis"></i><span>More</span></button>
+        </div>
+        <button class="leave-btn" id="leaveClassBtn"><i class="fa-solid fa-phone-slash"></i> Leave</button>
+      </footer>
+    </div>
+
+    <!-- More options menu -->
+    <div class="more-menu" id="moreMenu" hidden>
+      <button data-more="host" id="hostControlsMenuBtn"><i class="fa-solid fa-user-gear"></i> Host Controls</button>
+      <button data-more="lock" id="lockClassMenuBtn"><i class="fa-solid fa-lock"></i> Lock Classroom</button>
+      <button data-more="pin"><i class="fa-solid fa-thumbtack"></i> Pin Presentation</button>
+      <button data-more="settings" id="deviceSettingsMenuBtn"><i class="fa-solid fa-gear"></i> Device Settings</button>
+    </div>
+  </section>
+</div>
+
+<!-- ======================= MODALS ======================= -->
+
+<div class="modal-overlay" id="modalOverlay" hidden>
+
+  <div class="modal" id="hostControlsModal" hidden>
+    <div class="modal-head"><h3><i class="fa-solid fa-user-gear"></i> Host Controls</h3><button class="icon-btn modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="permission-list">
+        <label class="switch-row"><span><i class="fa-solid fa-microphone"></i> Participant microphone</span><input type="checkbox" id="hostPermMic" class="switch-input"></label>
+        <label class="switch-row"><span><i class="fa-solid fa-video"></i> Participant camera</span><input type="checkbox" id="hostPermCam" class="switch-input"></label>
+        <label class="switch-row"><span><i class="fa-solid fa-comments"></i> Chat</span><input type="checkbox" id="hostPermChat" class="switch-input"></label>
+        <label class="switch-row"><span><i class="fa-solid fa-paperclip"></i> File uploads</span><input type="checkbox" id="hostPermFiles" class="switch-input"></label>
+        <label class="switch-row"><span><i class="fa-solid fa-display"></i> Screen sharing</span><input type="checkbox" id="hostPermScreen" class="switch-input"></label>
+        <label class="switch-row"><span><i class="fa-solid fa-user-plus"></i> Invitations</span><input type="checkbox" id="hostPermInvite" class="switch-input"></label>
+      </div>
+      <hr class="modal-divider">
+      <h4>Raised Hands</h4>
+      <div id="raisedHandsList" class="raised-hands-list"><p class="empty-hint">No hands raised.</p></div>
+    </div>
+  </div>
+
+  <div class="modal" id="deviceSettingsModal" hidden>
+    <div class="modal-head"><h3><i class="fa-solid fa-gear"></i> Device Settings</h3><button class="icon-btn modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <label class="field-label" for="cameraSelect">Camera</label>
+      <select id="cameraSelect" class="text-input"></select>
+      <label class="field-label" for="micSelect">Microphone</label>
+      <select id="micSelect" class="text-input"></select>
+      <label class="field-label" for="speakerSelect">Speaker</label>
+      <select id="speakerSelect" class="text-input"></select>
+      <p class="field-hint"><i class="fa-solid fa-circle-info"></i> Speaker selection depends on browser support.</p>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal" hidden>
+    <div class="modal-head"><h3 id="confirmTitle">Are you sure?</h3></div>
+    <div class="modal-body">
+      <p id="confirmMessage" class="muted"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="confirmCancelBtn">Cancel</button>
+        <button class="btn btn-primary danger-bg" id="confirmOkBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="aboutModal" hidden>
+    <div class="modal-head"><h3><i class="fa-solid fa-circle-info"></i> About EMlab Classes</h3><button class="icon-btn modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <img src="assets/logo/logo-original.png" alt="EMlab logo" class="about-logo">
+      <p><strong>EMlab Classes</strong> Version 1.0 Beta, by English Mastery Lab.</p>
+      <p class="muted">This beta runs entirely in your browser with no backend server. Profiles, classes, and classroom data are stored locally on this device using your browser's storage.</p>
+      <p class="muted"><strong>Honest limitation:</strong> camera and microphone previews, chat, and file sharing work locally for demonstration, but this beta does not transmit real time audio or video between separate devices, and does not sync data across devices. Genuine multi device video calls and live sync require a signaling and backend server planned for a future release.</p>
+      <p class="muted">Install this app to your device for quick access and offline use of the interface.</p>
+    </div>
+  </div>
+
+  <div class="modal" id="installHelpModal" hidden>
+    <div class="modal-head"><h3><i class="fa-solid fa-download"></i> Install EMlab Classes</h3><button class="icon-btn modal-close"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="installHelpBody"></div>
+  </div>
+
+</div>
+
+<script src="js/storage.js" defer></script>
+<script src="js/utils.js" defer></script>
+<script src="js/toast.js" defer></script>
+<script src="js/qr.js" defer></script>
+<script src="js/profile.js" defer></script>
+<script src="js/onboarding.js" defer></script>
+<script src="js/classes.js" defer></script>
+<script src="js/navigation.js" defer></script>
+<script src="js/classroom.js" defer></script>
+<script src="js/chat.js" defer></script>
+<script src="js/pwa.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
