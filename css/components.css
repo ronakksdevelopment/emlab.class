@@ -163,11 +163,12 @@ select.text-input { appearance: none; background-image: none; }
   inset: 0;
   background: rgba(6, 40, 90, 0.45);
   z-index: 2000;
-  display: flex;
+  display: none;
   align-items: flex-end;
   justify-content: center;
   padding: 0;
 }
+.modal-overlay[hidden] { display: none; }
 .modal-overlay[data-visible] { display: flex; }
 .modal {
   background: var(--color-surface);
